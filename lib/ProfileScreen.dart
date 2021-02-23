@@ -2,29 +2,17 @@ import 'package:Deliciousness/SettingsScreen.dart';
 import 'package:Deliciousness/auth0/auth0.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:Deliciousness/utils/constant.dart';
 import 'package:Deliciousness/widgets/profile_list_item.dart';
-import 'package:Deliciousness/utils/CustomIcons.dart';
-import 'package:Deliciousness/widgets/SocialIcons.dart';
 import 'package:Deliciousness/LoginScreen.dart';
 import 'package:Deliciousness/utils/globals.dart' as globals;
 
 final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
 
 class ProfileScreen extends StatefulWidget {
-  
-  final String name;
-  final String email;
-  final String picture;
-  final String userId;
-  final bool emailVerified;
-  final String accessToken;
-  final Auth0Client auth0client;
-  final String idToken;
-  
-  ProfileScreen({Key key, this.name, this.email, this.picture, this.emailVerified, this.accessToken, this.idToken, this.auth0client, this.userId}) : super(key: key);
+
+  ProfileScreen();
   
   @override
   ProfilePageState createState() => ProfilePageState();
@@ -69,14 +57,14 @@ class ProfilePageState extends State<ProfileScreen> {
                 title: Text('Account & Settings'),
                 leading: Icon(Icons.account_circle_outlined, color: Colors.blueAccent),
                 onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => SettingsScreen(accessToken: this.widget.accessToken, idToken: this.widget.idToken, auth0client: this.widget.auth0client, email: this.widget.email)));
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => SettingsScreen()));
                 },
               ),
               Container(
                 padding: EdgeInsets.only(left: 10, right: 10),
                 child: Divider(),
               ),
-              LogOutPopUp(auth0client: this.widget.auth0client),
+              //LogOutPopUp(auth0client: this.widget.auth0client),
             ],
           ),
         ),

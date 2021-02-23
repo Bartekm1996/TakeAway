@@ -144,7 +144,7 @@ class _ForgotPassWordDialog extends State<ForgotPassWordDialog> {
           showDialog(
               context: context,
               builder: (BuildContext context) {
-                return CustomDialogBoxState(title: 'Email Sent',description: 'Please check your inbox for instructions how to reset your password');
+                return ActionDialog(title: 'Email Sent',description: 'Please check your inbox for instructions how to reset your password');
               }
           );
       }

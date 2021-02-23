@@ -1,15 +1,19 @@
+import 'dart:convert';
+
+import 'package:Deliciousness/ProfileScreen.dart';
 import 'package:Deliciousness/RegisterScreen.dart';
+import 'package:Deliciousness/user/user.dart';
 import 'package:Deliciousness/utils/constant.dart';
 import 'package:Deliciousness/widgets/my_header.dart';
-import 'package:Deliciousness/auth0/auth0.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:Deliciousness/ProfileScreen.dart';
 import 'package:Deliciousness/widgets/InfoDialogPopUp.dart';
 import 'package:Deliciousness/widgets/ForgotPassWordDialog.dart';
-import 'package:Deliciousness/utils/urls.dart' as urls;
+import 'api/auth/auth.dart';
+import 'package:intl/intl.dart';
+
 
 final FlutterAppAuth appAuth = FlutterAppAuth();
 final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
@@ -25,11 +29,9 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController myUserNameController;
   final controller = ScrollController();
   double offset = 10;
-  bool _isSelected = false;
   bool passwordInvisible = true;
   bool passValidateText = false;
   bool userNameValidateText = false;
-  Auth0Client auth0client;
 
   @override
   Widget build(BuildContext context) {
@@ -192,7 +194,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           showDialog(
                               context: context,
                               builder: (BuildContext context) {
-                                return ForgotPassWordDialog(auth0client: this.auth0client);
+                                return ForgotPassWordDialog();
                               }
                           );
 
@@ -228,7 +230,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           margin: EdgeInsets.only(left: 15.0),
                           child:InkWell(
                             onTap: () {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => RegisterScreen(auth0client: this.auth0client)));
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => RegisterScreen()));
                               },
                             child: Text("Sign Up",
                               style: TextStyle(
@@ -272,9 +274,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void initState() {
-    initAction();
-    auth0client = Auth0Client(clientId: urls.AUTH0_CLIENT_ID, clientSecret: urls.AUTH0_CLIENT_SECRET, domain: urls.AUTH0_DOMAIN,
-        connectTimeout: 10000, sendTimeout: 10000, receiveTimeout: 60000, useLoggerInterceptor: true);
     super.initState();
     this.myUserNameController = TextEditingController();
     this.myPwdController = TextEditingController();
@@ -287,17 +286,47 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
+
+  void initAction() async {
+    final accessToken = await secureStorage.read(key: 'access_token');
+
+    if(accessToken != null){
+      var parsedToken = jsonDecode(accessToken);
+    }
+
+  }
+
+  void parseDate(){
+    DateFormat format = new DateFormat("EEE, dd MMM yyyy hh:mm a zzz");
+  }
+
   void loginAction() {
-    var idToken;
     try {
 
         var details = new Map<String, String>();
             details['username'] = myUserNameController.text;
             details['password'] = myPwdController.text;
-            details['audience'] = urls.AUTH0_CONST_AUDIENCE;
-            details['scope'] = 'openid profile email';
+            details['grant_type'] = 'password';
 
+        Auth().passwordGrant(details).then((res) => {
+          secureStorage.write(key: 'access_token', value: res.body),
+          User(userName: this.myUserNameController.text.split("@")[0], email: this.myUserNameController.text),
+          Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(
+                  builder: (context) => ProfileScreen()
+              ),(Route<dynamic> route) => false),
+        }).catchError((err) => {
+          print(err),
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return ActionDialog(title: "Login Failed",
+                    description: 'Incorrect  email or password');
+              }
+          )
+        });
 
+        /*
         auth0client.passwordGrantMFA(details).then((response) => {
             idToken = this.auth0client.parseIdToken(response.idToken),
             secureStorage.write(key: 'refresh_token', value: response.refreshToken),
@@ -314,16 +343,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       auth0client: auth0client,
                       userId: idToken['sub'])),(Route<dynamic> route) => false),
         }
+         */
 
-    }).catchError((err) => {
-          showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return CustomDialogBoxState(title: "Login Failed",
-                    description: 'Incorrect  email or password');
-              }
-          )
-        });
+
 
     } catch (e, s) {
       print('login error: $e - stack: $s');
@@ -331,51 +353,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   }
 
-  void writeOtpKeys(String mfaToken) async {
-    await secureStorage.write(
-        key: 'mfa_token', value: mfaToken);
-  }
-
   void logoutAction() async {
-    await secureStorage.delete(key: 'refresh_token');
-    await secureStorage.delete(key: 'mfa_token');
+    await secureStorage.delete(key: 'access_token');
   }
 
-  void initAction() async {
-
-    final storedRefreshToken = await secureStorage.read(key: 'refresh_token');
-    if (storedRefreshToken == null) return;
-
-    try {
-
-        final response = await appAuth.token(TokenRequest(
-          urls.AUTH0_CLIENT_ID,
-          urls.AUTH0_REDIRECT_URI,
-          issuer: urls.AUTH0_ISSUER,
-          refreshToken: storedRefreshToken,
-        ));
-
-        final idToken = this.auth0client.parseIdToken(response.idToken);
-
-        secureStorage.write(key: 'refresh_token', value: response.refreshToken);
-
-        if (idToken != null ) {
-          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(
-              builder: (context) =>
-                  ProfileScreen(name: idToken['nickname'],
-                      email: idToken['email'],
-                      picture: idToken['picture'],
-                      emailVerified: idToken['email_verified'],
-                      accessToken: response.accessToken,
-                      idToken: response.idToken,
-                      auth0client: auth0client,
-                      userId: idToken['sub'])),(Route<dynamic> route) => false);
-        }
-
-
-    } catch (e, s) {
-      print('error on refresh token: $e - stack: $s');
-      logoutAction();
-    }
-  }
 }

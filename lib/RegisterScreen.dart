@@ -1,10 +1,14 @@
+import 'package:Deliciousness/widgets/InfoDialogPopUp.dart';
+import 'package:Deliciousness/widgets/dialogs/InfoAlertDialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:Deliciousness/utils/constant.dart';
 import 'package:Deliciousness/auth0/auth0.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:Deliciousness/widgets/InfoDialogPopUp.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
+import 'package:Deliciousness/api/auth/auth.dart';
+
+import 'ProfileScreen.dart';
 
 class RegisterScreen extends StatefulWidget{
 
@@ -379,36 +383,45 @@ class _RegisterScreenState extends State<RegisterScreen>{
 
   void createUser(){
     var params = new Map<String, String>();
-        params['username'] = this.myUserNameController.text;
-        params['email'] = this.myEmailController.text;
-        params['password'] = this.myPwdController.text;
-        params['connection'] = 'Username-Password-Authentication';
+        params['Email'] = this.myEmailController.text;
+        params['Password'] = this.myPwdController.text;
+        params['ConfirmPassword'] = this.myPwdController.text;
 
+    var loginParams = new Map<String, String>();
+        loginParams['username'] = this.myEmailController.text;
+        loginParams['password'] = this.myPwdController.text;
 
-     this.widget.auth0client.createUser(params).then((value) => {
-       showDialog(
-         context: context,
-         builder: (BuildContext context) {
-           return CustomDialogBoxState(
-             title: "Sign Up Successful",
-             description: "You created your account successfully on Deliciousness, please verify your address before using your account",
-           );
-         }
-       ).then((value) => {
-          Navigator.of(context).pop()
-       })
-     }).catchError((onError) => {
-       print(onError),
-       showDialog(
-           context: context,
-           builder: (BuildContext context) {
-             return CustomDialogBoxState(
-               title: "Sign Up Failed",
-               description: "Email address already registered ",
-             );
+     Auth().register(params).then((res) => {
+       print(res.body),
+       if(res.statusCode == 200){
+         showDialog(
+             context: context,
+             builder: (BuildContext context) {
+               return ActionDialog(title: "Sign Up Successful",
+                   description: 'You created your account successfully on Deliciousness');
+             }
+         ).then((val) => {
+           if(val){
+
+             Auth().passwordGrant(loginParams).then((res) => {
+               if(res.statusCode == 200){
+                 secureStorage.write(key: 'access_token', value: res.body),
+                 Navigator.of(context)
+                     .pushAndRemoveUntil(MaterialPageRoute(
+                     builder: (context) => ProfileScreen()),
+                         (Route<dynamic> route) => false),
+               }
+             }),
            }
-       ),
-     });
+         }),
+       }
+     }).catchError((err) => {
+      print(err),
+      InfoAlertDialog(
+          title: "Sign Up Failed",
+          body: "Email address already registered "
+      ).show(context),
+    });
   }
 
   @override

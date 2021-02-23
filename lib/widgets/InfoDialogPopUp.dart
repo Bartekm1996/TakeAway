@@ -2,13 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:Deliciousness/utils/constant.dart';
 
-class CustomDialogBoxState extends StatelessWidget {
+class ActionDialog extends StatelessWidget {
 
   final String title;
   final String description;
-  final VoidCallback voidCallback;
 
-  CustomDialogBoxState({this.title, this.description, this.voidCallback});
+  ActionDialog({this.title, this.description});
 
   @override
   Widget build(BuildContext context) {

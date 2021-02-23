@@ -1,12 +1,10 @@
+import 'package:Deliciousness/user/user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:Deliciousness/utils/globals.dart' as globals;
 import 'package:image_picker/image_picker.dart';
-import 'package:Deliciousness/widgets/PassWordPopUP.dart';
-import 'package:jwt_decoder/jwt_decoder.dart';
 import 'dart:async';
 import 'dart:io';
 import 'LoginScreen.dart';
@@ -17,12 +15,7 @@ final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
 
 class SettingsScreen extends StatefulWidget{
 
-  final String accessToken;
-  final String idToken;
-  final Auth0Client auth0client;
-  final String email;
-
-  SettingsScreen({this.accessToken, this.idToken, this.auth0client, this.email});
+  SettingsScreen();
 
   @override
   _SettingsScreen createState() => _SettingsScreen();
@@ -168,12 +161,15 @@ class _SettingsScreen extends State<SettingsScreen>{
                           title: Text("Password Settings"),
                           trailing: Icon(Icons.keyboard_arrow_right),
                           onTap: () {
+                            /*
                             showDialog(
                               context: context,
                               builder: (BuildContext context) {
                                 return PassWordDialogPopUp(accessToken: this.widget.accessToken, auth0client: this.widget.auth0client, email: this.widget.email, sub: this.sub);
                               },
                             );
+
+                             */
                           },
                         ),
                         Divider(),
@@ -189,7 +185,7 @@ class _SettingsScreen extends State<SettingsScreen>{
                           },
                         ),
                         Divider(),
-                        LogOutPopUp(auth0client: this.widget.auth0client),
+                        //LogOutPopUp(auth0client: this.widget.auth0client),
                       ],
                     ),
                   ),
@@ -248,16 +244,12 @@ class _SettingsScreen extends State<SettingsScreen>{
   }
 
   void setDetails() {
-    final idToken = JwtDecoder.decode(this.widget.idToken);
-    if(idToken != null){
-      setState(() {
-        this.nickName = idToken['nickname'];
-        this.email =  idToken['email'];
-        this.pic =  idToken['picture'];
-        this.isEmailVerified = idToken['email_verified'];
-        this.sub = idToken['sub'];
+    setState(() {
+        this.nickName = User().getUserName();
+        this.email =  User().getEmail();
+        this.pic =  '';
+        this.isEmailVerified = User().isVerified();
       });
-    }
   }
 
 
