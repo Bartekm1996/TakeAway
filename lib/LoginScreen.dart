@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:Deliciousness/ProfileScreen.dart';
 import 'package:Deliciousness/RegisterScreen.dart';
+import 'package:Deliciousness/api/restaurant/food/food.dart';
 import 'package:Deliciousness/user/user.dart';
 import 'package:Deliciousness/utils/constant.dart';
 import 'package:Deliciousness/widgets/my_header.dart';
@@ -308,13 +309,15 @@ class _LoginScreenState extends State<LoginScreen> {
             details['password'] = myPwdController.text;
             details['grant_type'] = 'password';
 
+        var ress;
+
         Auth().passwordGrant(details).then((res) => {
-          secureStorage.write(key: 'access_token', value: res.body),
-          User(userName: this.myUserNameController.text.split("@")[0], email: this.myUserNameController.text),
+          ress = jsonDecode(res.body)['access_token'],
+          secureStorage.write(key: 'access_token', value: 'Bearer ' + ress),
           Navigator.of(context).pushAndRemoveUntil(
               MaterialPageRoute(
-                  builder: (context) => ProfileScreen()
-              ),(Route<dynamic> route) => false),
+                  builder: (context) => ProfileScreen(accessToken: 'Bearer ' + ress)
+              ), (Route<dynamic> route) => false),
         }).catchError((err) => {
           print(err),
           showDialog(
@@ -326,24 +329,7 @@ class _LoginScreenState extends State<LoginScreen> {
           )
         });
 
-        /*
-        auth0client.passwordGrantMFA(details).then((response) => {
-            idToken = this.auth0client.parseIdToken(response.idToken),
-            secureStorage.write(key: 'refresh_token', value: response.refreshToken),
-
-            if (idToken != null ) {
-              Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(
-              builder: (context) =>
-                  ProfileScreen(name: idToken['nickname'],
-                      email: idToken['email'],
-                      picture: idToken['picture'],
-                      emailVerified: idToken['email_verified'],
-                      accessToken: response.accessToken,
-                      idToken: response.idToken,
-                      auth0client: auth0client,
-                      userId: idToken['sub'])),(Route<dynamic> route) => false),
-        }
-         */
+   
 
 
 

@@ -1,4 +1,5 @@
 import 'package:Deliciousness/SettingsScreen.dart';
+import 'package:Deliciousness/api/restaurant/restaurant_api.dart';
 import 'package:Deliciousness/auth0/auth0.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -8,11 +9,13 @@ import 'package:Deliciousness/widgets/profile_list_item.dart';
 import 'package:Deliciousness/LoginScreen.dart';
 import 'package:Deliciousness/utils/globals.dart' as globals;
 
+import 'api/auth/auth.dart';
+
 final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
 
 class ProfileScreen extends StatefulWidget {
-
-  ProfileScreen();
+  String accessToken;
+  ProfileScreen({this.accessToken});
   
   @override
   ProfilePageState createState() => ProfilePageState();
@@ -46,11 +49,30 @@ class ProfilePageState extends State<ProfileScreen> {
                   color: Colors.blue,
                 ),
               ),
+              ExpansionTile(
+                title: const Text('Menu'),
+                leading: Icon(Icons.fastfood, color: Colors.blueAccent),
+                children: <Widget>[
+                  ListTile(
+                    title: Text('Current Order'),
+                    leading: Icon(Icons.fastfood, color: Colors.blueAccent),
+                    onTap: () {
+
+                      },
+                  ),
+                ],
+              ),
               ListTile(
-                title: Text('Order'),
+                title: Text('Current Order'),
                 leading: Icon(Icons.fastfood, color: Colors.blueAccent),
                 onTap: () {
 
+                },
+              ),
+              ListTile(
+                title: Text('Previous Orders'),
+                leading: Icon(Icons.fastfood, color: Colors.blueAccent),
+                onTap: () {
                 },
               ),
               ListTile(
@@ -64,75 +86,24 @@ class ProfilePageState extends State<ProfileScreen> {
                 padding: EdgeInsets.only(left: 10, right: 10),
                 child: Divider(),
               ),
+              ListTile(
+                title: Text('Log Out'),
+                leading: Icon(Icons.logout, color: Colors.blueAccent),
+                onTap: () {
+                  Auth().logOut(this.widget.accessToken).then((value) => {
+                    secureStorage.delete(key: 'access_token'),
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen())),
+                  });
+                },
+              ),
               //LogOutPopUp(auth0client: this.widget.auth0client),
             ],
           ),
         ),
         body: Stack(
           children: <Widget>[
-            Padding(
-              padding: EdgeInsets.all(25),
-              child: Column(
-                children: <Widget>[
-                  Align(
-                    alignment: Alignment.topLeft,
-                    child: Text('Restaurants',
-                        style: TextStyle(
-                            fontSize: 20.0,
-                            color: Colors.blueAccent,
-                            fontFamily: "Poppins",
-                            fontWeight: FontWeight.w700,
-                        ),
-                    ),
-                  ),
-                  Container(
-                    height: 300,
-                      child: this.notifcations.isEmpty ? Center(child: Text('No Restaurants to show', textAlign: TextAlign.center)) : ListView.builder(
-                        scrollDirection: Axis.vertical,
-                        shrinkWrap: true,
-                        itemCount: notifcations.length,
-                        itemBuilder: (context, index) {
-                          return Text(notifcations[index]);
-                        },
-                        padding: new EdgeInsets.symmetric(
-                          horizontal: 10.0,
-                          vertical: 50.0,
-                        ),
-                      ),
-                  ),
-                  Align(
-                    alignment: Alignment.topLeft,
-                    child: Text('Recent Orders',
-                      style: TextStyle(
-                        fontSize: 20.0,
-                        color: Colors.blueAccent,
-                        fontFamily: "Poppins",
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                  Container(
-                    height: 300,
-                    child: this.notifcations.isEmpty ? Center(child: Text('No Recent Orders', textAlign: TextAlign.center)) : ListView.builder(
-                      scrollDirection: Axis.vertical,
-                      shrinkWrap: true,
-                      itemCount: notifcations.length,
-                      itemBuilder: (context, index) {
-                        return Text(notifcations[index]);
-                      },
-                      padding: new EdgeInsets.symmetric(
-                        horizontal: 10.0,
-                        vertical: 50.0,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-            ),
-
+            new RestaurantApi(accessToken: this.widget.accessToken),
           ],
-
         ),
       ),
     );

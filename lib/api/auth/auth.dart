@@ -5,7 +5,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:http/http.dart' as http;
-
 class Auth {
   static final Auth _auth = Auth._internal();
   final Dio dio = Dio();
@@ -52,7 +51,7 @@ class Auth {
     assert(params['Email'] != null && params['Password'] != null);
     return await http.post(
       '$_domain/api/Account/Register',
-      headers: getHeaders('application/json'),
+      headers: getHeaders('application/json', null),
       body: jsonEncode(params),
     );
   }
@@ -61,14 +60,25 @@ class Auth {
     assert(params['username'] != null && params['password'] != null);
     return await http.post(
       '$_domain/token',
-      headers: getHeaders('application/x-www-form-urlencoded'),
+      headers: getHeaders('application/x-www-form-urlencoded', null),
       body: params,
     );
   }
 
-  Map<String, String> getHeaders(String contentType) {
+  Future<http.Response> logOut(String accessToken) async {
+    return await http.post(
+      '$_domain/api/Account/Logout',
+      headers: getHeaders('application/json', accessToken),
+    );
+  }
+
+  Map<String, String> getHeaders(String contentType, String accessToken) {
     Map<String, String> headers = new Map<String, String>();
     headers['Content-Type'] = "$contentType";
+
+    if(accessToken != null){
+      headers['Authorization'] = accessToken;
+    }
 
     return headers;
   }
