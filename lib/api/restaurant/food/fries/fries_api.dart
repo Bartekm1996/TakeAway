@@ -6,7 +6,7 @@ class FriesApi {
 
   FriesApi({this.accessToken});
 
-  Future<http.Response> _getAllFries() async{
+  Future<http.Response> getAllFries() async{
     return await http.get(
       urls.TAKEAWAY_DOMAIN + urls.FRIES_API,
       headers: getHeaders('application/json'),
@@ -18,19 +18,6 @@ class FriesApi {
       urls.TAKEAWAY_DOMAIN + urls.FRIES_API,
       headers: getHeaders('application/json'),
     );
-  }
-
-  List<Fries> getAllFires() {
-    var res;
-    List<Fries> fries = new List();
-    _getAllFries().then((value) => {
-      res = jsonDecode(value.body),
-      for(var i = 0; res.length; i++){
-        fries.add(new Fries(res[i])),
-      }
-    });
-
-    return fries;
   }
 
   Map<String, String> getHeaders(String contentType) {

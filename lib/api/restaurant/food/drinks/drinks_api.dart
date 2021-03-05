@@ -6,7 +6,7 @@ class DrinksApi {
 
   DrinksApi({this.accessToken});
 
-  Future<http.Response> _getAllDrinks() async{
+  Future<http.Response> getAllDrinks() async{
     return await http.get(
       urls.TAKEAWAY_DOMAIN + urls.DRINKS_API,
       headers: getHeaders('application/json'),
@@ -18,19 +18,6 @@ class DrinksApi {
       urls.TAKEAWAY_DOMAIN + urls.DRINKS_API,
       headers: getHeaders('application/json'),
     );
-  }
-
-  List<Drink> getAllDrinks() {
-    var res;
-    List<Drink> drinks = new List();
-    _getAllDrinks().then((value) => {
-       res = jsonDecode(value.body),
-      for(var i = 0; i < res.length; i++){
-        drinks.add(new Drink(res[i])),
-      }
-    });
-
-    return drinks;
   }
 
   Map<String, String> getHeaders(String contentType) {

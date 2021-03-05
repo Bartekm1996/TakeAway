@@ -2,26 +2,32 @@ import 'package:Deliciousness/api/restaurant/food/food.dart';
 import 'package:Deliciousness/widgets/dialogs/AlertDialog.dart';
 import 'package:flutter/material.dart';
 
-class InfoAlertDialog extends CustomAlertDialog{
+class PizzaToppingsInfoDialog extends CustomAlertDialog{
 
   String title;
   String body;
+  List<Topping> toppings;
 
-  InfoAlertDialog({this.title, this.body});
+  PizzaToppingsInfoDialog({this.title, this.body, this.toppings});
 
   @override
   Widget create(BuildContext context) {
     return AlertDialog(
       title: Text(getTitle()),
-      content: Text(getBody()),
+      content: Column(
+        children: <Widget>[
+        ],
+      ),
       actions: [
         FlatButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text('Ok'),
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text('Ok'),
         )
       ],
     );
   }
+
+
 
 
   @override
@@ -34,5 +40,5 @@ class InfoAlertDialog extends CustomAlertDialog{
     return this.title;
   }
 
-  
+
 }

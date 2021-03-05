@@ -16,6 +16,19 @@ abstract class FoodItem {
   int calories;
 
 
+  FoodItem(this.id, this.name, this.description, this.imageUrl, this.price, this.calories);
+
+  FoodItem.clone(FoodItem source){
+    id = source.id;
+    name = source.name;
+    description = source.description;
+    imageUrl = source.imageUrl;
+    price = source.price;
+    calories = source.calories;
+  }
+
+  FoodItem clone();
+
   int getCalories(){
     return calories;
   }

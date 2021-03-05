@@ -1,4 +1,5 @@
 import 'package:Deliciousness/user/user.dart';
+import 'package:Deliciousness/widgets/dialogs/ResetPassWordDialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -15,7 +16,9 @@ final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
 
 class SettingsScreen extends StatefulWidget{
 
-  SettingsScreen();
+  String accessToken;
+
+  SettingsScreen({this.accessToken});
 
   @override
   _SettingsScreen createState() => _SettingsScreen();
@@ -30,6 +33,7 @@ class _SettingsScreen extends State<SettingsScreen>{
   bool isEmailVerified = false;
   bool showEditButton = false;
   String watchConnected = 'Disconnected';
+
   File _image;
   Timer timer;
   static const channel = const MethodChannel('flutterChannel');
@@ -37,23 +41,8 @@ class _SettingsScreen extends State<SettingsScreen>{
   @override
   void initState() {
     setDetails();
-  //  watchConnectivityCall();
-   // timer = Timer.periodic(Duration(seconds: 10), (Timer t) => watchConnectivityCall());
-    super.initState();
-  }
 
-  Future<void> watchConnectivityCall() async {
-    channel.invokeMethod("checkWatchState");
-    channel.setMethodCallHandler((methodCall) async {
-      if (methodCall.method == "flutterSettingsChannel") {
-        print('Watch response ' + methodCall.arguments);
-        if (methodCall.arguments != null) {
-          setState(() {
-            watchConnected = (methodCall.arguments == 'Disconnected' ? 'Disconnected' : 'Connected');
-          });
-        }
-      }
-    });
+    super.initState();
   }
 
 
@@ -107,7 +96,8 @@ class _SettingsScreen extends State<SettingsScreen>{
                           children: <Widget>[
                             InkWell(
                               onTap: ()=>setState(()=> showEditButton = !showEditButton),
-                              child: AvatarImage(pic: (this.pic.isEmpty ? "sense/assets/images/kermit.jpg" : this.pic)),
+
+                              child: CircleAvatar(backgroundImage : AssetImage('assets/images/kermit.jpg'), radius: 100),
                             ),
                             if(showEditButton)
                               Positioned(
@@ -132,21 +122,21 @@ class _SettingsScreen extends State<SettingsScreen>{
                         ),
                         SizedBox(height: 10),
                         Text(
-                          this.nickName,
+                          'Bartekm1996',
                           style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.w700,
                               fontFamily: "Poppins"),
                         ),
                         Text(
-                          this.email,
+                          'bmlynarkiewicz1996@gmail.com',
                           style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.normal,
                               fontFamily: "Poppins"),
                         ),
                         Text(
-                          'Email Verified: ' + (this.isEmailVerified ? "True" : "False"),
+                          'Email Verified: True',
                           style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.bold,
@@ -158,18 +148,10 @@ class _SettingsScreen extends State<SettingsScreen>{
                             Icons.lock_outline,
                             color: Colors.blueAccent,
                           ),
-                          title: Text("Password Settings"),
+                          title: Text("Change Password"),
                           trailing: Icon(Icons.keyboard_arrow_right),
                           onTap: () {
-                            /*
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return PassWordDialogPopUp(accessToken: this.widget.accessToken, auth0client: this.widget.auth0client, email: this.widget.email, sub: this.sub);
-                              },
-                            );
-
-                             */
+                            ResetPassWordDialog(accessToken: this.widget.accessToken, body: 'Password must be at least 8 characters in length', title: 'Password Reset').show(context);
                           },
                         ),
                         Divider(),
@@ -184,35 +166,9 @@ class _SettingsScreen extends State<SettingsScreen>{
 
                           },
                         ),
-                        Divider(),
                         //LogOutPopUp(auth0client: this.widget.auth0client),
                       ],
                     ),
-                  ),
-                  const SizedBox(height: 20.0),
-                  Text(
-                    "Notification Settings",
-                    style: TextStyle(
-                      fontSize: 20.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.indigo,
-                    ),
-                  ),
-                  SwitchListTile(
-                    activeColor:  Colors.blueAccent,
-                    contentPadding: const EdgeInsets.all(0),
-                    value: true,
-                    title: Text("Received notification"),
-                    onChanged: (val) {},
-                  ),
-                  SwitchListTile(
-                    activeColor: Colors.blueAccent,
-                    contentPadding: const EdgeInsets.all(0),
-                    value: true,
-                    title: Text("Received App Updates"),
-                    onChanged: (val){
-
-                    },
                   ),
                   const SizedBox(height: 30.0),
                   Text(

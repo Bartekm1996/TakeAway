@@ -65,6 +65,20 @@ class Auth {
     );
   }
 
+  Future<http.Response> resetPassword(String accessToken, String password) async{
+    assert(password != null);
+    Map<String, String> pass = new Map();
+                        pass['NewPassword'] = password;
+                        pass['ConfirmPassword'] = password;
+
+    return await http.post(
+      '$_domain/api/Account/SetPassword',
+      headers: getHeaders('application/json', accessToken),
+      body: pass,
+    );
+
+  }
+
   Future<http.Response> logOut(String accessToken) async {
     return await http.post(
       '$_domain/api/Account/Logout',

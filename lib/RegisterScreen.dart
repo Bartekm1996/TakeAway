@@ -408,7 +408,7 @@ class _RegisterScreenState extends State<RegisterScreen>{
                  secureStorage.write(key: 'access_token', value: res.body),
                  Navigator.of(context)
                      .pushAndRemoveUntil(MaterialPageRoute(
-                     builder: (context) => ProfileScreen()),
+                     builder: (context) => MenuScreen()),
                          (Route<dynamic> route) => false),
                }
              }),

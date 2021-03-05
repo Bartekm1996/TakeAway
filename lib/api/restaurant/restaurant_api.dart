@@ -1,191 +1,79 @@
+import 'dart:convert';
 
-
-import 'package:Deliciousness/api/restaurant/food/food_item.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 import 'food/food.dart' as food;
+import 'food/food.dart';
+import 'package:http/http.dart' as http;
 
-class RestaurantApi extends StatefulWidget{
+class RestaurantApi {
 
-  String accessToken = '';
+  String accessToken;
 
   RestaurantApi({this.accessToken});
 
-  @override
-  _RestaurantApi createState() => _RestaurantApi();
 
-}
+  Future<List<food.Burger>> createBurgersCard() async{
+    List<Burger> burgers = new List();
+    http.Response res = await food.BurgerApi(accessToken: this.accessToken).getAllBurgers();
+    var parseRes = jsonDecode(res.body);
 
-class _RestaurantApi extends State<RestaurantApi>{
+    for(var i = 0; i < parseRes.length; i++){
+      burgers.add(new food.Burger(parseRes[i]));
+    }
 
-  Map<String, List<Widget>> foods = new Map();
-  Map<String, bool> shows = new Map();
-  bool drinks = true, fries = true, desserts = true, pizzas = true, burgers = true;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: createOptionsCards(),
-    );
+    return burgers;
   }
 
+  Future<List<food.Drink>> createDrinksCard() async{
+    List<food.Drink> drinks = new List();
+    http.Response res = await food.DrinksApi(accessToken: this.accessToken).getAllDrinks();
+    var parseRes = jsonDecode(res.body);
 
-  @override
-  void initState() {
-    super.initState();
+    for(var i = 0; i < parseRes.length; i++){
+      drinks.add(new food.Drink(parseRes[i]));
+    }
+
+    return drinks;
   }
 
-  void createMenu(){
+  Future<List<food.Dessert>> createDessertsCard() async{
+    List<food.Dessert> desserts = new List();
+    http.Response res = await food.DessertsApi(accessToken: this.accessToken).getAllDeserts();
+    var parseRes = jsonDecode(res.body);
 
-  }
+    for(var i = 0; i < parseRes.length; i++){
+      desserts.add(new food.Dessert(parseRes[i]));
+    }
 
-  Widget createOptionsCards(){
-    return new Column(
-      children: [
-        SizedBox(height: 10),
-        if(pizzas)
-        createFoodCard('Pizzas', 'assets/icons/pizza.png'),
-        SizedBox(height: 10),
-        if(burgers)
-        createFoodCard('Burgers', 'assets/icons/burger.png'),
-        SizedBox(height: 10),
-        if(fries)
-        createFoodCard('Fries', 'assets/icons/fries.png'),
-        SizedBox(height: 10),
-        if(desserts)
-        createFoodCard('Desserts', 'assets/icons/desserts.jpeg'),
-        SizedBox(height: 10),
-        if(drinks)
-        createFoodCard('Drinks', 'assets/icons/drinks.png'),
-        SizedBox(height: 10),
-      ],
-    );
-  }
-
-  Widget createFoodCard(String foodType, String assetImagePath){
-    return Card(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          ListTile(
-            leading: Image(image: AssetImage(assetImagePath)),
-            title: Text(foodType),
-            subtitle: Text('Res'),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: <Widget>[
-              TextButton(
-                child: Text('View $foodType'),
-                onPressed: () {
-                    //setShowsToFalse(foodType);
-                },
-              ),
-              const SizedBox(width: 8),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget createCards(List<dynamic> foods){
-
-    return new Card(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              ListTile(
-                leading: Icon(Icons.album),
-                title: Text('Name'),
-                subtitle: Text('Res'),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  TextButton(
-                    child: const Text('BUY TICKETS'),
-                    onPressed: () {/* ... */},
-                  ),
-                  const SizedBox(width: 8),
-                  TextButton(
-                    child: const Text('LISTEN'),
-                    onPressed: () {/* ... */},
-                  ),
-                  const SizedBox(width: 8),
-                ],
-              ),
-            ],
-          ),
-        );
+    return desserts;
 
   }
 
-  Map<String, String> parseCasts(dynamic fd){
-    Map<String, String> casts = new Map();
+  Future<List<food.Topping>> getAvailableTopics() async{
+    List<food.Topping> toppings = new List();
+    http.Response res = await food.ToppingApi(accessToken: this.accessToken).getAllToppings();
+    var parseRes = jsonDecode(res.body);
 
-    if(fd is FoodItem){
-        casts['Id'] = fd.getId();
-        casts['Name'] = fd.getName();
-        casts['ImageUrl'] = fd.getImageUrl();
-        casts['Description'] = fd.getDescription();
-        casts['Price'] = fd.getPrice().toString();
-        casts['Calories'] = fd.getCalories().toString();
+    for(var i = 0; i < parseRes.length; i++){
+      print(parseRes[i]);
+      toppings.add(new food.Topping(parseRes[i]));
     }
 
-    if(fd is food.Dessert){
-        casts['Millilitres'] = fd.getMillilitres().toString();
-    }
-
-    if(fd is food.Drink){
-      casts['Millilitres'] = fd.getMillilitres().toString();
-    }
-
-    if(fd is food.Burger){
-      casts['Weight'] = fd.getWeight().toString();
-    }
-
-    if(fd is food.Fries){
-      casts['Weight'] = fd.getWeight().toString();
-    }
-
-    if(fd is food.Pizza){
-      casts['Weight'] = fd.getWeight().toString();
-    }
+    return toppings;
 
   }
 
-  void createBurgersCard() async {
-    List<food.Burger> burgers = food.BurgerApi(accessToken: this.widget.accessToken).getAllBurgers();
+  Future<List<food.Fries>> createFriesCard() async{
+    List<food.Fries> fries = new List();
+    http.Response res = await food.FriesApi(accessToken: this.accessToken).getAllFries();
+    var parseRes = jsonDecode(res.body);
 
-    for(food.Burger burger in burgers){
-
+    for(var i = 0; i < parseRes.length; i++){
+      fries.add(new food.Fries(parseRes[i]));
     }
-  }
 
-  List<Widget> createDrinksCard(){
-    List<food.Drink> drinks = food.DrinksApi(accessToken: this.widget.accessToken).getAllDrinks();
-
-    for(food.Drink drink in drinks){
-
-    }
-  }
-
-  void createDessertsCard(){
-    List<food.Dessert> desserts = food.DessertsApi(accessToken: this.widget.accessToken).getAllDeserts();
-
-    for(food.Dessert dessert in desserts){
-
-    }
-  }
-
-  void createFriesCard(){
-    List<food.Fries> fries = food.FriesApi(accessToken: this.widget.accessToken).getAllFires();
-
-    for(food.Fries fries in fries){
-
-    }
+    return fries;
   }
 
 

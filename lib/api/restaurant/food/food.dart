@@ -17,6 +17,7 @@ part 'burgers/burgers_api.dart';
 part 'fries/fries_api.dart';
 part 'toppings/toppings_api.dart';
 part 'pizza/pizza_api.dart';
+part 'toppings/topping.dart';
 part 'desserts/desserts_api.dart';
 part 'drinks/drinks_api.dart';
 

@@ -4,13 +4,7 @@ class Drink extends FoodItem{
 
   double _millilitres;
 
-  Drink(Map<String, dynamic> json){
-    this.id = json['Id'];
-    this.name = json['Name'];
-    this.description = json['Description'];
-    this.imageUrl = json['ImageUrl'];
-    this.price = json['Price'];
-    this.calories = json['Calories'];
+  Drink(Map<String, dynamic> json) : super(json['id'], json['Name'], json['Description'], json['ImageUrl'] ,json['Price'], json['Calories']){
     this._millilitres = json['Millilitres'];
   }
 
@@ -20,5 +14,14 @@ class Drink extends FoodItem{
 
   double getMillilitres(){
     return this._millilitres;
+  }
+
+  Drink.clone(Drink source) : super.clone(source){
+    _millilitres = source._millilitres;
+  }
+
+  @override
+  Drink clone() {
+    return Drink.clone(this);
   }
 }
