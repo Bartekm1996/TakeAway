@@ -23,11 +23,22 @@ class Pizza extends FoodItem{
   }
 
   void addTopping(Topping topping){
+    increasePrice(topping.getPrice());
+    increaseCalories(topping.getCalories());
+    increaseWeight(topping.getWeight());
     this.toppings.add(topping);
   }
 
   List<Topping> getToppings(){
     return this.toppings;
+  }
+
+  void increaseCalories(int calories){
+    this.calories = calories;
+  }
+
+  void increaseWeight(double weight){
+    this._weight += weight;
   }
 
   void increasePrice(double pr){
