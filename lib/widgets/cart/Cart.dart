@@ -1,19 +1,18 @@
-
+import 'package:Deliciousness/api/restaurant/food/food_item.dart';
 
 class Cart{
 
-  List<dynamic> foodItems;
+  List<FoodItem> foodItems;
   double totalPriceOfItems;
 
-
-  Cart(this.foodItems, this.totalPriceOfItems);
-
-  Cart.initial(){
+  Cart(){
     foodItems = new List();
     totalPriceOfItems = 0;
   }
 
-  Cart.copy(Cart cart)  : this(cart.foodItems, cart.totalPriceOfItems);
+  double getTotalPriceOfCart(){
+    return this.totalPriceOfItems;
+  }
 
 
 }

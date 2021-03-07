@@ -3,6 +3,11 @@ import 'package:Deliciousness/api/restaurant/food/food.dart';
 import 'package:Deliciousness/api/restaurant/food/food_item.dart';
 import 'package:Deliciousness/api/restaurant/restaurant_api.dart';
 import 'package:Deliciousness/auth0/auth0.dart';
+import 'package:Deliciousness/widgets/cart/AddItemToCartCommand.dart';
+import 'package:Deliciousness/widgets/cart/Cart.dart';
+import 'package:Deliciousness/widgets/cart/CartCommandHistory.dart';
+import 'package:Deliciousness/widgets/cart/Command.dart';
+import 'package:Deliciousness/widgets/cart/RemoveItemFromCartCommand.dart';
 import 'package:Deliciousness/widgets/dialogs/FoodInfoDialog.dart';
 import 'package:Deliciousness/widgets/dialogs/PizzaToppingsInfoDialog.dart';
 import 'package:flutter/material.dart';
@@ -28,8 +33,9 @@ class MenuScreen extends StatefulWidget {
 
 class ProfilePageState extends State<MenuScreen> {
 
+  final CartCommandHistory cartCommandHistory = new CartCommandHistory();
+  final Cart cart = new Cart();
   List<Card> cards = <Card>[new Card()];
-  List<dynamic> cart = new List();
   double totalOfOrder = 0;
 
   Brightness _getBrightness() {
@@ -224,7 +230,7 @@ class ProfilePageState extends State<MenuScreen> {
   }
 
   
-  Widget buildCard(dynamic item){
+  Widget buildCard(FoodItem item){
     return new Card(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -263,10 +269,33 @@ class ProfilePageState extends State<MenuScreen> {
     );
   }
 
-  void addToCart(dynamic item){
+  void addToCart(FoodItem foodItem){
+    var command = new AddItemToCartCommand(foodItem);
+    executeCommand(command);
+  }
+
+  void removeFromCart(FoodItem foodItem){
+    var command = new RemoveItemFromCartCommand(foodItem);
+    executeCommand(command);
+  }
+
+  void executeCommand(Command command){
     setState(() {
-      this.cart.add(foodType(item));
-      this.totalOfOrder += (item as FoodItem).getPrice();
+      command.execute();
+      cartCommandHistory.add(command);
+      updateDisplayPrice();
+    });
+  }
+
+  void undo(){
+    setState(() {
+      cartCommandHistory.undo();
+    });
+  }
+
+  void updateDisplayPrice(){
+    setState(() {
+      this.totalOfOrder = cart.getTotalPriceOfCart();
     });
   }
 

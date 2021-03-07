@@ -1,14 +1,14 @@
 import 'dart:collection';
 
-import 'package:Deliciousness/widgets/cart/CartCommand.dart';
+import 'package:Deliciousness/widgets/cart/Command.dart';
 
 class CartCommandHistory{
 
-  final ListQueue<CartCommand> _commandList = ListQueue<CartCommand>();
+  final ListQueue<Command> _commandList = ListQueue<Command>();
 
   bool get isEmpty => _commandList.isEmpty;
 
-  void add(CartCommand command){
+  void add(Command command){
     _commandList.add(command);
   }
 
