@@ -3,25 +3,24 @@ part of food;
 class PizzaBuilder{
 
   Pizza pizza;
-  String accessToken;
-  Map<String, Topping> _addToppings;
+  Map<String, Topping> addToppings;
   PizzaOriginator pizzaOrginator;
   List<PizzaMomento> snapshots;
 
-  PizzaBuilder({this.accessToken}){
-    this.accessToken = accessToken;
+  PizzaBuilder(List<Topping> toppings){
     this.snapshots = new List();
     this.pizzaOrginator = new PizzaOriginator();
-    initToppingsMap();
+    this.addToppings = initToppingsMap(toppings);
+    initPizza();
   }
 
-  void initToppingsMap(){
-    this._addToppings = new Map();
-    new RestaurantApi(accessToken: this.accessToken).getAvailableTopics().then((value) => {
-      for(var i = 0; i < value.length; i++){
-        _addToppings[value[i].getName()] = value[i],
-      }
-    });
+  Map<String, Topping> initToppingsMap(List<Topping> tps){
+    Map<String, Topping> toppings = new Map();
+    for(var i = 0; i < tps.length; i++){
+      toppings[tps[i].getName()] = tps[i];
+    }
+
+    return toppings;
   }
 
   Map<String, dynamic> initPizza(){
@@ -30,10 +29,13 @@ class PizzaBuilder{
     pz['Name'] = "Custom Build Pizza";
     pz['Description'] = "A Custom Build Pizza By Customer";
     pz['ImageUrl'] = null;
-    pz['Price'] = 0;
+    pz['Price'] = 0.0;
     pz['Calories'] = 0;
-    pz['Weight'] = 0;
+    pz['Weight'] = 0.0;
     pz['PizzaBase'] = "RegularBase";
+
+    this.pizza = new Pizza(pz);
+
   }
 
 
@@ -54,6 +56,10 @@ class PizzaBuilder{
     pizza = new Pizza(initPizza());
   }
 
+  Pizza getPizza(){
+    return this.pizza;
+  }
+
   Pizza buildPizza(){
     return this.pizza;
   }
@@ -63,67 +69,67 @@ class PizzaBuilder{
   }
 
   void addBacon(){
-    this.pizza.addTopping(_addToppings['Bacon']);
+    this.pizza.addTopping(addToppings['Bacon']);
     addSnapShot(pizza);
   }
 
   void addBlackOlives(){
-    this.pizza.addTopping(_addToppings['Black olives']);
+    this.pizza.addTopping(addToppings['Black olives']);
     addSnapShot(pizza);
   }
 
   void addMushRooms(){
-    this.pizza.addTopping(_addToppings['Mushrooms']);
+    this.pizza.addTopping(addToppings['Mushrooms']);
     addSnapShot(pizza);
   }
 
   void addChicken(){
-    this.pizza.addTopping(_addToppings['Chicken']);
+    this.pizza.addTopping(addToppings['Chicken']);
     addSnapShot(pizza);
   }
 
   void addPineApple(){
-    this.pizza.addTopping(_addToppings['Pineapple']);
+    this.pizza.addTopping(addToppings['Pineapple']);
     addSnapShot(pizza);
   }
 
   void addMixedPeppers(){
-    this.pizza.addTopping(_addToppings['Mixed Peppers']);
+    this.pizza.addTopping(addToppings['Mixed Peppers']);
     addSnapShot(pizza);
   }
 
   void addCheese(){
-    this.pizza.addTopping(_addToppings['Cheese']);
+    this.pizza.addTopping(addToppings['Cheese']);
     addSnapShot(pizza);
   }
 
   void addTomatoSauce(){
-    this.pizza.addTopping(_addToppings['Tomato Sauce']);
+    this.pizza.addTopping(addToppings['Tomato Sauce']);
     addSnapShot(pizza);
   }
 
   void addPepperoni(){
-    this.pizza.addTopping(_addToppings['Pepperoni']);
+    this.pizza.addTopping(addToppings['Pepperoni']);
     addSnapShot(pizza);
   }
 
   void addOnions() {
-    this.pizza.addTopping(_addToppings['Onions']);
+    this.pizza.addTopping(addToppings['Onions']);
     addSnapShot(pizza);
   }
 
   void addBbqSauce(){
-    this.pizza.addTopping(_addToppings['BBQ Sauce']);
+    this.pizza.addTopping(addToppings['BBQ Sauce']);
     addSnapShot(pizza);
   }
 
   void addExtraCheese(){
-    this.pizza.addTopping(_addToppings['Extra cheese']);
+    this.pizza.addTopping(addToppings['Extra cheese']);
     addSnapShot(pizza);
   }
 
   void addYogurt(){
-    this.pizza.addTopping(_addToppings['Yogurt Topping']);
+    this.pizza.addTopping(addToppings['Yogurt Topping']);
     addSnapShot(pizza);
   }
 

@@ -6,6 +6,8 @@ import 'food/food.dart' as food;
 import 'food/food.dart';
 import 'package:http/http.dart' as http;
 
+import 'food/food_item.dart';
+
 class RestaurantApi {
 
   String accessToken;
@@ -74,6 +76,10 @@ class RestaurantApi {
     }
 
     return fries;
+  }
+
+  Future<http.Response> order(List<FoodItem> foods) async{
+    return food.OrderApi(accessToken: this.accessToken).postOrder(foods);
   }
 
 

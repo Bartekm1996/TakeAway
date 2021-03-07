@@ -1,8 +1,16 @@
+import 'package:Deliciousness/PizzaBuilderScreen.dart';
+import 'package:Deliciousness/PreviousOrders.dart';
 import 'package:Deliciousness/SettingsScreen.dart';
 import 'package:Deliciousness/api/restaurant/food/food.dart';
 import 'package:Deliciousness/api/restaurant/food/food_item.dart';
 import 'package:Deliciousness/api/restaurant/restaurant_api.dart';
 import 'package:Deliciousness/auth0/auth0.dart';
+import 'package:Deliciousness/widgets/cart/AddItemToCartCommand.dart';
+import 'package:Deliciousness/widgets/cart/Cart.dart';
+import 'package:Deliciousness/widgets/cart/CartCommandHistory.dart';
+import 'package:Deliciousness/widgets/cart/Command.dart';
+import 'package:Deliciousness/widgets/cart/RemoveItemFromCartCommand.dart';
+import 'package:Deliciousness/widgets/dialogs/CartItems.dart';
 import 'package:Deliciousness/widgets/dialogs/FoodInfoDialog.dart';
 import 'package:Deliciousness/widgets/dialogs/PizzaToppingsInfoDialog.dart';
 import 'package:flutter/material.dart';
@@ -28,8 +36,9 @@ class MenuScreen extends StatefulWidget {
 
 class ProfilePageState extends State<MenuScreen> {
 
+  final CartCommandHistory cartCommandHistory = new CartCommandHistory();
+  final Cart cart = new Cart();
   List<Card> cards = <Card>[new Card()];
-  List<dynamic> cart = new List();
   double totalOfOrder = 0;
 
   Brightness _getBrightness() {
@@ -50,7 +59,7 @@ class ProfilePageState extends State<MenuScreen> {
         brightness: _getBrightness(),
       ),
       child: Scaffold(
-        appBar: AppBar(title: Text('')),
+        appBar: AppBar(title: Text('Menu')),
         backgroundColor: globals.isDark ? null : Colors.grey.shade200,
         drawer: Drawer(
           child: ListView(
@@ -60,14 +69,31 @@ class ProfilePageState extends State<MenuScreen> {
               DrawerHeader(
                 child: Column(
                   children: <Widget>[
-                    SizedBox(height: 65),
-                    Text('Total ' + totalOfOrder.toString()),
-                    FlatButton(
-                        onPressed: (){
+                    Image(image: AssetImage('assets/icons/Deliciousness.png')),
+                    Row(
+                      children: <Widget>[
+                        Expanded(child:
+                          FlatButton(
+                            onPressed: (){
+                                new CartItems(title: 'Cart', body: '', cart: cart, orderTotal: this.totalOfOrder,cartCommandHistory: cartCommandHistory, accessToken: this.widget.accessToken).show(context);
+                            },
+                            child:
+                            Text(
+                              'View Cart',
+                              style: TextStyle(fontSize: 16.0),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Text(
+                            'Total € ' + totalOfOrder.toString(),
+                            style: TextStyle(fontSize: 16.0),
+                          ),
+                        ),
 
-                        },
-                        child: Text('View Cart'),
+                      ],
                     ),
+
                   ],
                 ),
                 decoration: BoxDecoration(
@@ -153,35 +179,30 @@ class ProfilePageState extends State<MenuScreen> {
                       });
                     },
                   ),
-                  ListTile(
-                    title: Text('Build Pizza'),
-                    contentPadding: EdgeInsets.only(left: 40.0),
-                    leading: Icon(Icons.fastfood, color: Colors.blueAccent),
-                    onTap: () {
-                      new RestaurantApi(accessToken: this.widget.accessToken).createDrinksCard().then((value) => {
-                        setState((){
-                          cards.clear();
-                          for(var i = 0; i < value.length; i++){
-                            cards.add(buildCard(value[i]));
-                          }
-                        }),
-                      });
-                    },
-                  ),
                 ],
               ),
               ListTile(
-                title: Text('Current Order'),
+                title: Text('Build Pizza'),
                 leading: Icon(Icons.fastfood, color: Colors.blueAccent),
                 onTap: () {
-
+                  new RestaurantApi(accessToken: this.widget.accessToken).getAvailableTopics().then((value) => {
+                    Navigator.of(context).push(
+                        MaterialPageRoute(
+                            builder: (context) => PizzaBuilderScreen(toppings: value, cartCommandHistory: this.cartCommandHistory, cart: this.cart, totalOfOrder: this.totalOfOrder)
+                        )),
+                  });
                 },
               ),
               ListTile(
                 title: Text('Previous Orders'),
                 leading: Icon(Icons.fastfood, color: Colors.blueAccent),
                 onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => PreviousOrders()));
                 },
+              ),
+              Container(
+                padding: EdgeInsets.only(left: 10, right: 10),
+                child: Divider(),
               ),
               ListTile(
                 title: Text('Account & Settings'),
@@ -189,10 +210,6 @@ class ProfilePageState extends State<MenuScreen> {
                 onTap: () {
                   Navigator.push(context, MaterialPageRoute(builder: (context) => SettingsScreen(accessToken: this.widget.accessToken)));
                 },
-              ),
-              Container(
-                padding: EdgeInsets.only(left: 10, right: 10),
-                child: Divider(),
               ),
               ListTile(
                 title: Text('Log Out'),
@@ -224,16 +241,16 @@ class ProfilePageState extends State<MenuScreen> {
   }
 
   
-  Widget buildCard(dynamic item){
+  Widget buildCard(FoodItem item){
     return new Card(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           ListTile(
             leading: Icon(Icons.fastfood),
-            trailing: Text('€ ' + (item as FoodItem).getPrice().toString()),
-            title: Text((item as FoodItem).getName()),
-            subtitle: Text((item as FoodItem).getDescription()),
+            trailing: Text('€ ' + item.getPrice().toString()),
+            title: Text(item.getName()),
+            subtitle: Text(item.getDescription()),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
@@ -263,10 +280,33 @@ class ProfilePageState extends State<MenuScreen> {
     );
   }
 
-  void addToCart(dynamic item){
+  void addToCart(FoodItem foodItem){
+    var command = new AddItemToCartCommand(foodItem, this.cart);
+    executeCommand(command);
+  }
+
+  void removeFromCart(FoodItem foodItem){
+    var command = new RemoveItemFromCartCommand(foodItem, this.cart);
+    executeCommand(command);
+  }
+
+  void executeCommand(Command command){
     setState(() {
-      this.cart.add(foodType(item));
-      this.totalOfOrder += (item as FoodItem).getPrice();
+      command.execute();
+      cartCommandHistory.add(command);
+      updateDisplayPrice();
+    });
+  }
+
+  void undo(){
+    setState(() {
+      cartCommandHistory.undo();
+    });
+  }
+
+  void updateDisplayPrice(){
+    setState(() {
+      this.totalOfOrder = cart.getTotalPriceOfCart();
     });
   }
 

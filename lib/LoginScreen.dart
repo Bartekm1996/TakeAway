@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:Deliciousness/ProfileScreen.dart';
+import 'package:Deliciousness/MenuScreen.dart';
 import 'package:Deliciousness/RegisterScreen.dart';
 import 'package:Deliciousness/api/restaurant/food/food.dart';
 import 'package:Deliciousness/api/restaurant/restaurant_api.dart';
@@ -315,7 +315,11 @@ class _LoginScreenState extends State<LoginScreen> {
         Auth().passwordGrant(details).then((res) => {
           ress = jsonDecode(res.body)['access_token'],
           secureStorage.write(key: 'access_token', value: 'Bearer ' + ress),
-          print(new RestaurantApi(accessToken: 'Bearer ' + ress).getAvailableTopics()),
+          //print(new RestaurantApi(accessToken: 'Bearer ' + ress).getAvailableTopics()),
+          Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(
+                  builder: (context) => MenuScreen(accessToken: 'Bearer ' + ress)
+              ), (Route<dynamic> route) => false),
         }).catchError((err) => {
           print(err),
           showDialog(

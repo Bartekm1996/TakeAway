@@ -9,7 +9,7 @@ class Pizza extends FoodItem{
   Pizza(Map<String, dynamic> json) : super(json['id'], json['Name'], json['Description'], json['ImageUrl'] ,json['Price'], json['Calories']){
     this._weight = json['Weight'];
     this._base = json['PizzaBase'];
-    this.toppings = parseTopping(json['Toppings']);
+    this.toppings = (json['Toppings'] != null ? parseTopping(json['Toppings']) : new List());
   }
 
 
@@ -34,7 +34,7 @@ class Pizza extends FoodItem{
   }
 
   void increaseCalories(int calories){
-    this.calories = calories;
+    this.calories += calories;
   }
 
   void increaseWeight(double weight){

@@ -8,7 +8,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:Deliciousness/api/auth/auth.dart';
 
-import 'ProfileScreen.dart';
+import 'MenuScreen.dart';
 
 class RegisterScreen extends StatefulWidget{
 

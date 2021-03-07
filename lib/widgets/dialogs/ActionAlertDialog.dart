@@ -1,5 +1,5 @@
 import 'package:Deliciousness/LoginScreen.dart';
-import 'package:Deliciousness/ProfileScreen.dart';
+import 'package:Deliciousness/MenuScreen.dart';
 import 'package:Deliciousness/widgets/dialogs/AlertDialog.dart';
 import 'package:flutter/material.dart';
 

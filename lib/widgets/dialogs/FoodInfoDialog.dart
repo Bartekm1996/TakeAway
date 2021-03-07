@@ -1,4 +1,5 @@
 import 'package:Deliciousness/api/restaurant/food/food.dart';
+import 'package:Deliciousness/api/restaurant/food/food_item.dart';
 import 'package:Deliciousness/widgets/dialogs/AlertDialog.dart';
 import 'package:flutter/material.dart';
 
@@ -6,7 +7,7 @@ class FoodInfoDialog extends CustomAlertDialog{
 
   String title;
   String body;
-  dynamic item;
+  FoodItem item;
 
   FoodInfoDialog({this.title, this.body, this.item});
 
@@ -14,10 +15,83 @@ class FoodInfoDialog extends CustomAlertDialog{
   Widget create(BuildContext context) {
     return AlertDialog(
       title: Text(getTitle()),
-      content: Column(
-        children: <Widget>[
-          Text(foodType()),
-        ],
+      content: Container(
+        width: MediaQuery.of(context).size.width - 50,
+        height: 210,
+        child: Column(
+          children: <Widget>[
+            Row(
+              children: <Widget>[
+                Expanded(
+                  child: const Text(
+                    "Name",
+                    style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    item.getName(),
+                    style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                  ),
+                )
+              ],
+            ),
+            const SizedBox(height: 15.0),
+            Row(
+              children: <Widget>[
+                Expanded(
+                  child: const Text(
+                    "Description",
+                    style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    item.getDescription(),
+                    style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                  ),
+                )
+              ],
+            ),
+            const SizedBox(height: 15.0),
+            Row(
+              children: <Widget>[
+                Expanded(
+                  child: const Text(
+                    "Calories",
+                    style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    item.getCalories().toString(),
+                    style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                  ),
+                )
+              ],
+            ),
+            const SizedBox(height: 15.0),
+            foodType(),
+            const SizedBox(height: 15.0),
+            Row(
+              children: <Widget>[
+                Expanded(
+                  child: const Text(
+                    "Calories",
+                    style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    item.getCalories().toString(),
+                    style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                  ),
+                )
+              ],
+            ),
+            const SizedBox(height: 15.0),
+          ],
+        ),
       ),
       actions: [
         FlatButton(
@@ -29,19 +103,38 @@ class FoodInfoDialog extends CustomAlertDialog{
   }
 
 
-  dynamic foodType() {
+  Widget foodType() {
     switch (this.item.runtimeType) {
       case Burger:
-        return (this.item as Burger).getWeight().toString();
+        return rowWidget("Weight", (this.item as Burger).getWeight().toString());
       case Drink:
-        return (this.item as Drink).getMillilitres().toString();
+        return rowWidget("Millimeters", (this.item as Drink).getMillilitres().toString());
       case Fries:
-        return (this.item as Fries).getWeight().toString();
+        return rowWidget("Weight", (this.item as Fries).getWeight().toString());
       case Dessert:
-        return (this.item as Dessert).getMillilitres().toString();
+        return rowWidget("Millimeters", (this.item as Dessert).getMillilitres().toString());
       case Pizza:
-        return (this.item as Pizza).getWeight().toString();
+        return rowWidget("Weight", (this.item as Pizza).getWeight().toString());
     }
+  }
+
+  Widget rowWidget(String type, String typ){
+    return Row(
+      children: <Widget>[
+        Expanded(
+          child: Text(
+            type,
+            style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+          ),
+        ),
+        Expanded(
+          child: Text(
+            typ,
+            style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+          ),
+        )
+      ],
+    );
   }
 
   @override
