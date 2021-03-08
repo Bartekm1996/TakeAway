@@ -6,19 +6,34 @@ class Pizza extends FoodItem{
   String _base;
   List<Topping> toppings;
 
-  Pizza(Map<String, dynamic> json) : super(json['id'], json['Name'], json['Description'], json['ImageUrl'] ,json['Price'], json['Calories']){
+  /*
+  Pizza(Map<String, dynamic> json) : super(json['Id'], json['Name'], json['Description'], json['ImageUrl'] ,json['Price'], json['Calories']){
+    this._weight = json['Weight'];
+    this._base = json['PizzaBase'];
+    this.toppings = (json['Toppings'] != null ? parseTopping(json['Toppings']) : new List());
+  }
+   */
+
+  Pizza.fromJson(Map<String, dynamic> json) : super(json['Id'], json['Name'], json['Description'], json['ImageUrl'] ,json['Price'], json['Calories']) {
     this._weight = json['Weight'];
     this._base = json['PizzaBase'];
     this.toppings = (json['Toppings'] != null ? parseTopping(json['Toppings']) : new List());
   }
 
+  Pizza(String id, String name, String desc, String img, double price, int cal, double weight, String pizzaBase, List<Topping> toppings) :
+        super(id, name, desc, img, price, cal) {
+    this._weight = weight;
+    this._base = _base;
+    this.toppings = toppings;
+  }
+
+  Pizza.copy(Pizza pizza) : this(pizza.id, pizza.name, pizza.description, pizza.imageUrl, pizza.price, pizza.calories, pizza._weight, pizza._base, pizza.toppings);
 
   List<Topping> parseTopping(dynamic json){
     List<Topping> toppings = new List();
     var res = jsonDecode(json);
-    for(var i = 0; i < res.length; i++){
-      toppings.add(res[i]);
-    }
+    print(res);
+
     return toppings;
   }
 
@@ -69,5 +84,19 @@ class Pizza extends FoodItem{
   Pizza clone() {
     return Pizza.clone(this);
   }
+
+
+  Map<String, dynamic> toJson() => {
+    'Id': this.id,
+    'Name': this.name,
+    'Description': this.description,
+    'ImageUrl': this.imageUrl,
+    'Price': this.price,
+    'Calories': this.calories,
+    'Weight': this._weight,
+    'PizzaBase': this._base,
+    'Toppings' : this.toppings,
+  };
+
 
 }

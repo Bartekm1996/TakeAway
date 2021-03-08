@@ -6,7 +6,7 @@ class PizzaApi {
 
   PizzaApi({this.accessToken});
 
-  Future<http.Response> _getAllPizzas() async{
+  Future<http.Response> getAllPizzas() async{
     return await http.get(
       urls.TAKEAWAY_DOMAIN + urls.PIZZA_API,
       headers: getHeaders('application/json'),
@@ -19,18 +19,13 @@ class PizzaApi {
       headers: getHeaders('application/json'),
     );
   }
-
-  List<Pizza> getAllPizzas() {
-    var res;
-    List<Pizza> pizzas = new List();
-    _getAllPizzas().then((value) => {
-      for(var i = 0; i < res.length; i++){
-        pizzas.add(new Pizza(res[i])),
-      }
-    });
-
-    return pizzas;
+  /*
+  Pizza(Map<String, dynamic> json) : super(json['Id'], json['Name'], json['Description'], json['ImageUrl'] ,json['Price'], json['Calories']){
+    this._weight = json['Weight'];
+    this._base = json['PizzaBase'];
+    this.toppings = (json['Toppings'] != null ? parseTopping(json['Toppings']) : new List());
   }
+   */
 
   Map<String, String> getHeaders(String contentType) {
     Map<String, String> headers = new Map<String, String>();

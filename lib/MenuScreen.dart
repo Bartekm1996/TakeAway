@@ -75,7 +75,10 @@ class ProfilePageState extends State<MenuScreen> {
                         Expanded(child:
                           FlatButton(
                             onPressed: (){
-                                new CartItems(title: 'Cart', body: '', cart: cart, orderTotal: this.totalOfOrder,cartCommandHistory: cartCommandHistory, accessToken: this.widget.accessToken).show(context);
+                                new CartItems(title: 'Cart', body: '', cart: cart, orderTotal: this.totalOfOrder,cartCommandHistory: cartCommandHistory, accessToken: this.widget.accessToken)
+                                    .show(context).then((value) => {
+                                      updateDisplayPrice(),
+                                });
                             },
                             child:
                             Text(
@@ -324,83 +327,6 @@ class ProfilePageState extends State<MenuScreen> {
       case Pizza:
         return (item as Pizza).clone();
     }
-  }
-}
-
-
-
-class AppBarButton extends StatelessWidget {
-  final IconData icon;
-  const AppBarButton({this.icon});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 55,
-      height: 55,
-      decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: kAppPrimaryColor,
-          boxShadow: [
-            BoxShadow(
-              color: kLightBlack,
-              offset: Offset(1, 1),
-              blurRadius: 10,
-            ),
-            BoxShadow(
-              color: kWhite,
-              offset: Offset(-1, -1),
-              blurRadius: 10,
-            ),
-          ]),
-      child: Icon(
-        icon,
-        color: fCL,
-      ),
-    );
-  }
-}
-
-
-
-
-class ProfileListItems extends StatelessWidget {
-
-  final Auth0Client auth0client;
-  final String accessToken;
-  final String userId;
-  final String idToken;
-  final String email;
-  const ProfileListItems({this.auth0client, this.accessToken, this.userId, this.idToken, this.email});
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: ListView(
-        children: <Widget>[
-          InkWell(
-            onTap: () {
-            },
-            child: ProfileListItem(
-              icon: LineAwesomeIcons.users,
-              text: 'Shared Alarms',
-            ),
-          ),
-          InkWell(
-            onTap: () {
-            },
-            child:  ProfileListItem(
-              icon: LineAwesomeIcons.cog,
-              text: 'Account & Settings',
-            ),
-          ),
-          ProfileListItem(
-            icon: LineAwesomeIcons.question_circle,
-            text: 'Help & Support',
-          ),
-        ],
-      ),
-    );
   }
 }
 

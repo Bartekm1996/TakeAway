@@ -34,7 +34,7 @@ class PizzaBuilder{
     pz['Weight'] = 0.0;
     pz['PizzaBase'] = "RegularBase";
 
-    this.pizza = new Pizza(pz);
+    this.pizza = Pizza.fromJson(pz);
 
   }
 
@@ -44,7 +44,7 @@ class PizzaBuilder{
   }
 
   void returnToPreviousState(){
-    this.pizza = this.snapshots.last.getState();
+    this.pizza = this.snapshots[this.snapshots.length-1].getState();
   }
 
   void addSnapShot(Pizza pizza) {
@@ -53,7 +53,7 @@ class PizzaBuilder{
   }
 
   void createPizza(){
-    pizza = new Pizza(initPizza());
+    initPizza();
   }
 
   Pizza getPizza(){

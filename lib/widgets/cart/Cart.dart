@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:Deliciousness/api/restaurant/food/food_item.dart';
 
 class Cart{
@@ -41,6 +43,19 @@ class Cart{
   int getNumberOfProducts(){
     return this._foodItems.length;
   }
+
+  List<String> _getItemUids(){
+    List<String> uids = new List();
+    for(var i = 0; i < this._foodItems.length; i++){
+      uids.add(this._foodItems[i].getId());
+    }
+    return uids;
+  }
+
+  Map<String, dynamic> toJson() => {
+    'Price': getTotalPriceOfCart(),
+    'Ids': _getItemUids(),
+  };
 
 
 }

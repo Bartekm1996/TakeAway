@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:Deliciousness/widgets/cart/Cart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'food/food.dart' as food;
@@ -78,8 +79,72 @@ class RestaurantApi {
     return fries;
   }
 
-  Future<http.Response> order(List<FoodItem> foods) async{
-    return food.OrderApi(accessToken: this.accessToken).postOrder(foods);
+  Future<List<food.Pizza>> createPizzaCard() async{
+    List<food.Pizza> pizzas = new List();
+    http.Response res = await food.PizzaApi(accessToken: this.accessToken).getAllPizzas();
+    var parseRes = jsonDecode(res.body);
+
+    for(var i = 0; i < parseRes.length; i++){
+      pizzas.add(new food.Pizza.fromJson(parseRes[i]));
+    }
+
+    return pizzas;
+  }
+
+  List<FoodItem> getAllFoods() {
+    List<FoodItem> list = new List();
+
+    createBurgersCard().then((value) => {
+      list.addAll(value),
+    });
+
+    createDessertsCard().then((value) => {
+      list.addAll(value),
+    });
+
+    createDrinksCard().then((value) => {
+      list.addAll(value),
+    });
+
+    createFriesCard().then((value) => {
+      list.addAll(value),
+    });
+
+    createPizzaCard().then((value) => {
+      list.addAll(value),
+    });
+
+    return list;
+
+  }
+
+  List<FoodItem> parseIds(List<FoodItem> foods, List<dynamic> ids){
+    List<FoodItem> items = new List();
+
+    for(var i = 0; i < foods.length; i++){
+      if(foods[i].getId() == ids[i]){
+        items.add(foods[i].clone());
+      }
+    }
+
+    return items;
+  }
+
+  Future<List<food.Order>> getPastOrders() async {
+    List<FoodItem> foods = getAllFoods();
+    List<food.Order> orders = new List();
+    http.Response res = await food.OrderApi(accessToken: this.accessToken).getPastOrder();
+    var parseRes = jsonDecode(res.body);
+
+    for(var i = 0; i < parseRes.length; i++){
+      orders.add(new food.Order(parseRes[i]['TimeStamp'],parseRes[i]['Id'],parseRes[i]['Price'],parseIds(foods, parseRes[i]['Ids'])));
+    }
+
+    return orders;
+  }
+
+  Future<http.Response> order(Cart cart) async{
+    return food.OrderApi(accessToken: this.accessToken).postOrder(cart);
   }
 
 

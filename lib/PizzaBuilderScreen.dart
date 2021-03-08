@@ -223,6 +223,13 @@ class _PizzaBuilderScreen extends State<PizzaBuilderScreen>{
                   child: const Text('Remove'),
                   onPressed: () {
                     this.widget.pizzaBuilder.returnToPreviousState();
+
+                    setState(() {
+                      this.pizzaToppings.clear();
+                      this.pizzaToppings.addAll(this.widget.pizzaBuilder.getPizza().getToppings());
+                    });
+
+                    print(this.widget.pizzaBuilder.getPizza().getToppings().length);
                   },
                 ),
               ),

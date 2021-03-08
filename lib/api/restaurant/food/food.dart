@@ -1,6 +1,7 @@
 library food;
 import 'package:Deliciousness/api/restaurant/food/food_item.dart';
 import 'package:Deliciousness/api/restaurant/restaurant_api.dart';
+import 'package:Deliciousness/widgets/cart/Cart.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
@@ -18,6 +19,7 @@ part 'fries/fries.dart';
 part 'pizza/PizzaBuilder.dart';
 part 'pizza/PizzaOriginator.dart';
 part 'order/order_api.dart';
+part 'order/order.dart';
 part 'pizza/pizza.dart';
 part 'burgers/burgers_api.dart';
 part 'fries/fries_api.dart';

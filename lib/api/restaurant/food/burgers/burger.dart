@@ -4,7 +4,7 @@ class Burger extends FoodItem{
 
   double _weight;
 
-  Burger(Map<String, dynamic> json) : super(json['id'], json['Name'], json['Description'], json['ImageUrl'] ,json['Price'], json['Calories']){
+  Burger(Map<String, dynamic> json) : super(json['Id'], json['Name'], json['Description'], json['ImageUrl'] ,json['Price'], json['Calories']){
     this._weight = json['Weight'];
   }
 
@@ -25,5 +25,14 @@ class Burger extends FoodItem{
     return Burger.clone(this);
   }
 
+  Map<String, dynamic> toJson() => {
+    'Id': this.id,
+    'Name': this.name,
+    'Description': this.description,
+    'ImageUrl': this.imageUrl,
+    'Price': this.price,
+    'Calories': this.calories,
+    'Weight': this._weight,
+  };
 
 }

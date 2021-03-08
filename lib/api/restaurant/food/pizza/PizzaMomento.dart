@@ -4,7 +4,7 @@ class PizzaMomento extends Momento{
   Pizza _state;
 
   PizzaMomento(Pizza pizza){
-    _state = pizza;
+    _state = Pizza.copy(pizza);
   }
 
   Pizza getState(){

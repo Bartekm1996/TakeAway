@@ -30,13 +30,13 @@ class CartItems extends CustomAlertDialog{
       actions: [
         FlatButton(
           onPressed: () {
-            Navigator.of(context).pop();
+            Navigator.pop(context, this.cart.getTotalPriceOfCart());
           },
           child: Text('Close'),
         ),
         FlatButton(
           onPressed: () {
-            new RestaurantApi(accessToken: this.accessToken).order(cart.getCartItems()).then((value) => {
+            new RestaurantApi(accessToken: this.accessToken).order(cart).then((value) => {
               print(value),
             });
           },
@@ -133,7 +133,6 @@ class _CartItemsDialog extends State<CartItemsDialog> {
     setState(() {
       command.execute();
       this.widget.cartCommandHistory.add(command);
-      updateDisplayPrice();
     });
   }
 
@@ -143,11 +142,6 @@ class _CartItemsDialog extends State<CartItemsDialog> {
     });
   }
 
-  void updateDisplayPrice(){
-    setState(() {
-      this.widget.oderTotoal = this.widget.cart.getTotalPriceOfCart();
-    });
-  }
 
 
 }

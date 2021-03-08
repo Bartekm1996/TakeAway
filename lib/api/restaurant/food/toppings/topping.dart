@@ -3,7 +3,7 @@ part of food;
 class Topping extends FoodItem{
   double _weight;
 
-  Topping(Map<String, dynamic> json) : super(json['id'], json['Name'], json['Description'], json['ImageUrl'] ,json['Price'], json['Calories']){
+  Topping(Map<String, dynamic> json) : super(json['Id'], json['Name'], json['Description'], json['ImageUrl'] ,json['Price'], json['Calories']){
     this._weight = json['Weight'];
   }
 
@@ -24,4 +24,13 @@ class Topping extends FoodItem{
     return Topping.clone(this);
   }
 
+  Map<String, dynamic> toJson() => {
+    'id': this.id,
+    'Name': this.name,
+    'Description': this.description,
+    'ImageUrl': this.imageUrl,
+    'Price': this.price,
+    'Calories': this.calories,
+    'Weight': this._weight,
+  };
 }

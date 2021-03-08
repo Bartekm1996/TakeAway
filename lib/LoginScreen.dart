@@ -2,9 +2,6 @@ import 'dart:convert';
 
 import 'package:Deliciousness/MenuScreen.dart';
 import 'package:Deliciousness/RegisterScreen.dart';
-import 'package:Deliciousness/api/restaurant/food/food.dart';
-import 'package:Deliciousness/api/restaurant/restaurant_api.dart';
-import 'package:Deliciousness/user/user.dart';
 import 'package:Deliciousness/utils/constant.dart';
 import 'package:Deliciousness/widgets/my_header.dart';
 import 'package:flutter/material.dart';
